@@ -1,11 +1,18 @@
 const mongoose = require('mongoose');
 
 const NegotiationSchema = new mongoose.Schema({
+    // Can be linked to either an order or material request
     orderId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order',
-        required: true,
-        unique: true
+        ref: 'Order'
+    },
+    materialRequestId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MaterialRequest'
+    },
+    materialRequestAcceptanceId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MaterialRequestAcceptance'
     },
     buyerId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +23,20 @@ const NegotiationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    negotiationType: {
+        type: String,
+        enum: ['order', 'material_request'],
+        required: true
+    },
+    initialOffer: {
+        basePrice: { type: Number, required: true },
+        deliveryFee: { type: Number, default: 0 },
+        totalPrice: { type: Number, required: true },
+        quantity: { type: Number, required: true },
+        unit: { type: String, required: true },
+        deliveryTerms: String,
+        notes: String
     },
     messages: [{
         senderId: {
@@ -36,7 +57,11 @@ const NegotiationSchema = new mongoose.Schema({
         priceOffer: {
             basePrice: Number,
             deliveryFee: Number,
-            totalPrice: Number
+            totalPrice: Number,
+            quantity: Number,
+            unit: String,
+            deliveryTerms: String,
+            counterOfferReason: String
         },
         timestamp: {
             type: Date,
@@ -54,7 +79,11 @@ const NegotiationSchema = new mongoose.Schema({
     finalPriceAgreed: {
         basePrice: Number,
         deliveryFee: Number,
-        totalPrice: Number
+        totalPrice: Number,
+        quantity: Number,
+        unit: String,
+        deliveryTerms: String,
+        agreedAt: { type: Date, default: Date.now }
     },
     negotiationStatus: {
         type: String,

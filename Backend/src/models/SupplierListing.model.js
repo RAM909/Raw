@@ -15,6 +15,17 @@ const SupplierListingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    imageUrls: [{
+        type: String,
+        required: true
+    }],
+    imageDetails: [{
+        url: { type: String, required: true },
+        publicId: { type: String, required: true },
+        format: String,
+        size: Number,
+        isPrimary: { type: Boolean, default: false }
+    }],
     quantityAvailable: {
         type: Number,
         required: true,
@@ -61,6 +72,17 @@ const SupplierListingSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    soldCount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    // Track total revenue from this product
+    totalRevenue: {
+        type: Number,
+        default: 0,
+        min: 0
     }
 }, {timestamps: true});
 
@@ -69,5 +91,7 @@ SupplierListingSchema.index({ "location.lat": 1, "location.lng": 1 });
 
 // Index for filtering
 SupplierListingSchema.index({ type: 1, category: 1, isActive: 1 });
+SupplierListingSchema.index({ userId: 1, isActive: 1 });
+SupplierListingSchema.index({ soldCount: -1, isActive: 1 }); // For popular products
 
 module.exports = mongoose.model('SupplierListing', SupplierListingSchema);
